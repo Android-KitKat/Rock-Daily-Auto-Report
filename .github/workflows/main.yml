@@ -37,10 +37,14 @@ jobs:
 
       # 在 'Settings' - 'Secrets' 添加 HOST (服务器地址), USERNAME (用户名), PASSWORD (密码)。
       - name: Daily Report
+        env:
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
         run: |
           cd workdir
           npm install
-          node daily '${{ secrets.HOST }}' '${{ secrets.USERNAME }}' '${{ secrets.PASSWORD }}'
+          node daily '$HOST' '$USERNAME' '$PASSWORD'
 
       - name: Export logs
         if: always()
