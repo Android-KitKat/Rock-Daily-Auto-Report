@@ -1,0 +1,66 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Rock Daily Report
+
+# Runs at 00:00 UTC every day
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+env:
+  TZ: Asia/Shanghai
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "MainWork"
+  MainWork:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Set Timezone to UTC+8
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo timedatectl set-timezone "$TZ"
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Clone Workflow Repository
+        uses: actions/checkout@v2
+
+      - name: Clone Daily Report Repository
+        uses: actions/checkout@v2
+        with:
+          repository: Android-KitKat/Rock-Daily-Report
+          path: workdir
+
+      # 在 'Settings' - 'Secrets' 添加 HOST (服务器地址), USERNAME (用户名), PASSWORD (密码)。
+      - name: Daily Report
+        run: |
+          cd workdir
+          npm install
+          node daily '${{ secrets.HOST }}' '${{ secrets.USERNAME }}' '${{ secrets.PASSWORD }}'
+
+      - name: Export logs
+        if: always()
+        run: |
+          cd workdir
+          cat reports.log >> ../reports.log
+
+      - name: Get date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
+      - name: Commit Files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m ":pencil: ${{ steps.date.outputs.date }} 填报结果"
+
+      # 此处的 ${{ secrets.GITHUB_TOKEN }} 是 Actions 自有变量，不用管
+      - name: GitHub Push
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
