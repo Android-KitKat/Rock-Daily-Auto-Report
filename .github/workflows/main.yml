@@ -44,7 +44,7 @@ jobs:
         run: |
           cd workdir
           npm install
-          node daily '$HOST' '$USERNAME' '$PASSWORD'
+          node daily "$HOST" "$USERNAME" "$PASSWORD"
 
       - name: Export logs
         if: always()
