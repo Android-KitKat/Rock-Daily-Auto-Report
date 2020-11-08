@@ -54,7 +54,7 @@ jobs:
 
       - name: Get date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d %H:%M:%S')"
 
       - name: Commit Files
         run: |
