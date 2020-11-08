@@ -2,8 +2,10 @@
 
 name: Rock Daily Report
 
-# Runs at 00:00 UTC every day
+# Controls when the action will run.
+# Triggers the workflow on manual or at every day 00:00 UTC
 on:
+  workflow_dispatch:
   schedule:
     - cron: "0 0 * * *"
 
